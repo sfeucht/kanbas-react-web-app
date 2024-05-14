@@ -1,5 +1,6 @@
 import React from 'react';
 import Labs from "./Labs";
+import Kanbas from "./Kanbas";
 import { HashRouter, Route, Routes, Navigate} from "react-router-dom";
 
 function App() {
@@ -11,7 +12,7 @@ function App() {
           <Route path="/" element={<Navigate to="Labs" />} />
           // display Labs component onl if browser URL matches /Labs/*
           <Route path="/Labs/*" element={ <Labs />} />
-          
+          <Route path="/Kanbas/*" element={<Kanbas />} />          
         </Routes>
       </div>
     </HashRouter>
