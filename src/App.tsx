@@ -1,11 +1,20 @@
 import React from 'react';
 import Labs from "./Labs";
+import { HashRouter, Route, Routes, Navigate} from "react-router-dom";
 
 function App() {
   return (
-    <div>
-      <Labs />
-    </div>
+    <HashRouter>
+      <div>
+        <Routes>
+          // if URL is root, navigate to Labs component 
+          <Route path="/" element={<Navigate to="Labs" />} />
+          // display Labs component onl if browser URL matches /Labs/*
+          <Route path="/Labs/*" element={ <Labs />} />
+          
+        </Routes>
+      </div>
+    </HashRouter>
   );
 }
 
