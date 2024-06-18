@@ -12,4 +12,14 @@ body * {  font-family: Arial, Helvetica, sans-serif;  }
   .border-gray {
     border: 1px solid gray;
   }
-  
+  .wrap {
+    display: inline-block;
+  }
+
+.input-group .form-control {
+  border-right: 0;
+}
+.input-group .input-group-text {
+    background: none;
+    border-left: 0;
+}
