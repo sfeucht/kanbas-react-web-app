@@ -16,7 +16,7 @@ export default function Kanbas() {
             <Routes>
                 <Route path="/" element={<Navigate to="Dashboard" />}></Route>
                 <Route path="Dashboard" element={<Dashboard />} />
-                <Route path="Courses/:id/*" element={<Courses />} />
+                <Route path="Courses/:cid/*" element={<Courses />} />
             </Routes>
         </div>
         </div>
