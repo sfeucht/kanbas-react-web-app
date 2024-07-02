@@ -1,22 +1,64 @@
 import { useParams } from "react-router";
 import * as db from "../../Database"; 
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useState } from "react";
+
+import { useDispatch } from "react-redux";
+import { addAssignment, updateAssignment } from "./reducer";
 
 export default function AssignmentEditor() {
     const { cid, id } = useParams();
-    const assign = db.assignments.filter((assign) => (assign.course == cid && assign._id == id))[0]
+    const dispatch = useDispatch(); 
 
-    console.log(cid, id);
-    console.log("assign", assign);
+    const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+
+    const initializeAssignment = () => {
+        if (id === "new") {
+            return {
+                _id: "new", 
+                title: "New Assignment", 
+                course: cid,
+                description: "Assignment Description",
+                points: 100,
+                dueDate: "2000-01-01",
+                availableDate: "2000-01-01",
+                availableToDate: "2000-01-01"
+            };
+        } else {
+            return assignments.find((a: any) => a.course === cid && a._id === id) || {
+                _id: "",
+                title: "",
+                course: "",
+                description: "",
+                points: 0,
+                dueDate: "",
+                availableDate: "",
+                availableToDate: ""
+            };
+        }
+    };
+
+    const [assign, setAssign] = useState(initializeAssignment);
+
+    const onSave = (assign: any) => {
+        if (id === "new") {
+            dispatch(addAssignment(assign));
+        } else {
+            dispatch(updateAssignment(assign)); 
+        }
+    }
+    
 
     return (
       <div id="wd-assignments-editor">
         <label htmlFor="wd-name">Assignment Name</label>
-        <div><input id="wd-name" className="form-control" value={assign.title} /></div>
+        <div><input id="wd-name" className="form-control" value={assign.title}
+        onChange={(e) => setAssign({...assign, title: e.target.value})} /></div>
         <br /><br />
-        <textarea id="wd-description" className="form-control" rows={10} cols={40}>
-        {assign.description}
-        </textarea>
+        <textarea id="wd-description" className="form-control" rows={10} cols={40} 
+            value={assign.description}
+            onChange={(e) => setAssign({...assign, description: e.target.value})}/>
         <br />
 
 <div className="container">
@@ -25,7 +67,8 @@ export default function AssignmentEditor() {
             <label htmlFor="wd-points" className="form-label text-secondary">Points</label>
         </div>
         <div className="col-sm-9">
-            <input id="wd-points" className="form-control" value={assign.points} />
+            <input id="wd-points" className="form-control" value={assign.points} type="number"
+            onChange={(e) => setAssign({...assign, points: parseInt(e.target.value)})}/>
         </div>
     </div>
     <div className="row mb-3">
@@ -86,17 +129,20 @@ export default function AssignmentEditor() {
                 <div className="row mb-3">
                     <div className="col">
                         <label htmlFor="wd-due-date" className="form-label fw-bold">Due</label>
-                        <input type="date" id="wd-due-date" value={assign.dueDate} className="form-control" />
+                        <input type="date" id="wd-due-date" value={assign.dueDate} className="form-control" 
+                        onChange={(e) => setAssign({...assign, dueDate: e.target.value})}/>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col">
                         <label htmlFor="wd-available-from" className="form-label fw-bold">Available from</label>
-                        <input type="date" id="wd-available-from" className="form-control" value={assign.availableDate} />
+                        <input type="date" id="wd-available-from" className="form-control" value={assign.availableDate} 
+                        onChange={(e) => setAssign({...assign, availableDate: e.target.value})}/>
                     </div>
                     <div className="col">
                         <label htmlFor="wd-available-until" className="form-label fw-bold">Until</label>
-                        <input type="date" id="wd-available-until" className="form-control" value={assign.availableToDate} />
+                        <input type="date" id="wd-available-until" className="form-control" value={assign.availableToDate}
+                        onChange={(e) => setAssign({...assign, availableToDate: e.target.value})} />
                     </div>
                 </div>
             </form>
@@ -113,8 +159,11 @@ export default function AssignmentEditor() {
     <div className="row">
         <div className="col-sm-3"></div>
         <div className="col-sm-9 text-end">
-            <Link key={`/Kanbas/Courses/${cid}/Assignments`} to={`/Kanbas/Courses/${cid}/Assignments`}><button id="wd-cancel" type="button" className="btn btn-secondary me-2">Cancel</button></Link>
-            <Link key={`/Kanbas/Courses/${cid}/Assignments`} to={`/Kanbas/Courses/${cid}/Assignments`}><button id="wd-save" type="button" className="btn btn-primary">Save</button></Link>
+            <Link to={`/Kanbas/Courses/${cid}/Assignments`}>
+                <button id="wd-cancel" type="button" className="btn btn-secondary me-2">Cancel</button></Link>
+            <Link to={`/Kanbas/Courses/${cid}/Assignments`}>
+                <button id="wd-save" type="button" className="btn btn-primary"
+                onClick={() => onSave(assign)}>Save</button></Link>
         </div>
     </div>
 </div>

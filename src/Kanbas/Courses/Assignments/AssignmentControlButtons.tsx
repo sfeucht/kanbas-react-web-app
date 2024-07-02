@@ -1,11 +1,27 @@
 import { IoEllipsisVertical } from "react-icons/io5";
 import GreenCheckmark from "./GreenCheckmark";
 import { BsPlus } from "react-icons/bs";
+import { FaTrash } from "react-icons/fa";
 
-export default function AssignmentControlButtons() {
+import { deleteAssignment } from "./reducer";
+import DeleteModal from "./DeleteModal";
+import { useDispatch } from "react-redux";
+
+export default function AssignmentControlButtons(assignId : any) {
+  const dispatch = useDispatch(); 
+
+  const deleteButton = () => {
+    dispatch(deleteAssignment(assignId.assignId));
+  }
+
   return (
     <div className="float-end">
       <GreenCheckmark />
+      <BsPlus />
       <IoEllipsisVertical className="fs-4" />
+      <FaTrash className="text-danger me-2 mb-1"
+      data-bs-toggle="modal" data-bs-target="#wd-delete-assignment-dialog"/>
+      <DeleteModal dialogTitle="Delete Assignment?" deleteFunc={deleteButton} />
     </div>
 );}
+
