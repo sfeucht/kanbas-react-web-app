@@ -5,14 +5,28 @@ import { TfiPencilAlt } from "react-icons/tfi";
 import { MdOutlineArrowDropDown } from "react-icons/md";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
-
-import { useSelector } from "react-redux";
+import * as client from "./client"; 
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { setAssignments } from "./reducer";
 
 
 export default function Assignments() {
     const { cid } = useParams();
     const { assignments } = useSelector((state: any) => (state.assignmentsReducer));
-  
+    const dispatch = useDispatch(); 
+
+    const fetchAssigns = async () => {
+      const assignments = await client.findAssignmentsForCourse(cid as string);
+      console.log(assignments[0].name); 
+      dispatch(setAssignments(assignments)); 
+    };
+    useEffect(() => {
+      fetchAssigns(); 
+    }, []); 
+
+    console.log(assignments); 
+
     return (
       <div id="wd-assignments">
       <div>
@@ -37,7 +51,7 @@ export default function Assignments() {
       <ul className="wd-assigns list-group rounded-0">
         {assignments
         .filter((assign: any) => (assign.course == cid))
-        .map((assign: any) => (
+        .map((assign: any) => {console.log("a", assign._id); return (
         <li className="wd-assign list-group-item p-3 ps-1">
         <div className="wrap">
           <BsGripVertical className="me-2 fs-3" />
@@ -48,7 +62,9 @@ export default function Assignments() {
           </div>
           <AssignmentControlButtons assignId={assign._id} />
         </li>
-        ))}
+        )}
+        )}
+        
       </ul>
 
 

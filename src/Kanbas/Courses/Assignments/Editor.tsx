@@ -1,5 +1,5 @@
 import { useParams } from "react-router";
-import * as db from "../../Database"; 
+import * as client from "./client"; 
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useState } from "react";
@@ -41,11 +41,12 @@ export default function AssignmentEditor() {
 
     const [assign, setAssign] = useState(initializeAssignment);
 
-    const onSave = (assign: any) => {
+    const onSave = (a: any) => {
         if (id === "new") {
-            dispatch(addAssignment(assign));
+            const withId = { ...a, _id: new Date().getTime().toString()}; 
+            client.createAssignment(cid, withId); 
         } else {
-            dispatch(updateAssignment(assign)); 
+            client.updateAssignment(assign); 
         }
     }
     

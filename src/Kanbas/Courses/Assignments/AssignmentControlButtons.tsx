@@ -3,15 +3,20 @@ import GreenCheckmark from "./GreenCheckmark";
 import { BsPlus } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 
-import { deleteAssignment } from "./reducer";
+// import { deleteAssignment } from "./reducer";
 import DeleteModal from "./DeleteModal";
 import { useDispatch } from "react-redux";
 
-export default function AssignmentControlButtons(assignId : any) {
-  const dispatch = useDispatch(); 
+import * as client from "./client"; 
 
+export default function AssignmentControlButtons(assignId : any) {
+  // const dispatch = useDispatch(); 
+  console.log("button", assignId); 
+
+  // TODO fix bug where for some reason assignId is A101 inside this helper 
   const deleteButton = () => {
-    dispatch(deleteAssignment(assignId.assignId));
+    console.log("id", assignId); 
+    client.deleteAssignment(assignId);
   }
 
   return (
