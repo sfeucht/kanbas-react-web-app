@@ -6,7 +6,7 @@ import * as client from "./client";
 
 export default function Signup() {
   const [error, setError] = useState("");
-  const [user, setUser] = useState<any>({});
+  const [user, setUser] = useState<any>({courses: []});
   const navigate = useNavigate();
   const dispatch = useDispatch(); 
   const signup = async () => {

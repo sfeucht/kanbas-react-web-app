@@ -10,16 +10,20 @@ import store from "./store";
 import { Provider } from "react-redux";
 import Account from "./Account";
 import ProtectedRoute from "./ProtectedRoute";
+import Session from "./Account/Session";
+import Enroll from "./Enroll";
 
 export default function Kanbas() {
   const [courses, setCourses] = useState<any[]>([]);
   const [course, setCourse] = useState<any>({
-    _id: "1234", name: "New Course", number: "New Number",
+    _id: "1234", name: "New Course", number: "ABC101",
     startDate: "2023-09-10", endDate: "2023-12-15", description: "New Description",
   });
+
   const addNewCourse = async () => {
     const newCourse = await client.createCourse(course); 
     setCourses([ ...courses, newCourse ]); 
+    return newCourse; 
     // setCourses([...courses, { ...course, _id: new Date().getTime().toString() }]);
   };
   const deleteCourse = async (courseId: any) => {
@@ -38,16 +42,19 @@ export default function Kanbas() {
       })
     );
   };
+
   const fetchCourses = async () => {
     const courses = await client.fetchAllCourses();
-    setCourses(courses);
+    setCourses(courses); 
   };
+
   useEffect(() => {
     fetchCourses();
   }, []);
   
     return (
       <Provider store={store}>
+        {/* <Session >  */}
       <div id="wd-kanbas" className="h-100">
         <div className="d-flex h-100">
         <div  className="d-none d-md-block bg-black">
@@ -66,11 +73,13 @@ export default function Kanbas() {
                   deleteCourse={deleteCourse}
                   updateCourse={updateCourse} />
                 </ProtectedRoute>} />
+                <Route path="Enroll" element={<Enroll courses={courses} />} />
                 <Route path="Courses/:cid/*" element={<ProtectedRoute><Courses courses={courses} /></ProtectedRoute>} />
             </Routes>
         </div>
         </div>
       </div>
+      {/* </Session> */}
       </Provider>
   );
 }

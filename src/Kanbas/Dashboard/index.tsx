@@ -1,56 +1,75 @@
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setCurrentUser } from "../Account/reducer";
+import * as client from "../Courses/client";
+import { deleteUser } from "../Courses/People/client";
+import { current } from "@reduxjs/toolkit";
 
 export default function Dashboard({courses, course, setCourse, addNewCourse,
   deleteCourse, updateCourse }: {
   courses: any[]; course: any; setCourse: (course: any) => void;
-  addNewCourse: () => void; deleteCourse: (course: any) => void;
+  addNewCourse: () => any; deleteCourse: (course: any) => void;
   updateCourse: () => void; }) 
   {
-  // const [courses, setCourses] = useState(db.courses);
-  // const [course, setCourse] = useState<any>({
-  //   _id: "0", name: "New Course", number: "New Number",
-  //   startDate: "2023-09-10", endDate: "2023-12-15",
-  //   image: "banana.webp", description: "New Description"
-  // });
+  // get current user 
+  const { currentUser } = useSelector((state: any) => state.accountReducer); 
+  courses = courses.filter((c) => (currentUser.courses.indexOf(c._id) > -1));
 
-  // const addNewCourse = () => {
-  //   const newCourse = { ...course,
-  //                       _id: new Date().getTime().toString() };
-  //   setCourses([...courses, { ...course, ...newCourse }]);
-  // };
-  // const deleteCourse = (courseId: string) => {
-  //   setCourses(courses.filter((course) => course._id !== courseId));
-  // };
-  // const updateCourse = () => {
-  //   setCourses(
-  //     courses.map((c) => {
-  //       if (c._id === course._id) {
-  //         return course;
-  //       } else {
-  //         return c;
-  //       }
-  //     })
-  //   );
-  // };
+  const dispatch = useDispatch(); 
+
+  // function to add course and update user as well 
+  const addUserCourse = async () => {
+    const addedCourse = await addNewCourse(); 
+    const newUser = {...currentUser, courses : [...currentUser.courses, addedCourse._id]}; 
+    await client.updateUser(newUser); 
+    dispatch(setCurrentUser(newUser)); 
+  }
+
+  // function to delete course and update user as well 
+  const deleteUserCourse = async (cid : Number) => {
+    await deleteCourse(cid); 
+    const newUser = {...currentUser, courses: currentUser.courses.filter((c : Number) => c !== cid)}
+    await client.updateUser(newUser); 
+    dispatch(setCurrentUser(newUser)); 
+  }
 
   return (
     <div id="wd-dashboard">
       <h1 id="wd-dashboard-title">Dashboard</h1> <hr />
-      <h5>New Course
-          <button className="btn btn-primary float-end m-1"
+
+      { currentUser.role === 'FACULTY' ? 
+      <div>
+      <h5>New Course</h5>  
+          
+          <div className="row">
+            <div className="col">
+              <input value={course.name} className="form-control mb-2" 
+                      onChange={(e) => setCourse({ ...course, name: e.target.value }) } />
+            </div>
+            <div className="col">
+              <input value={course.number} className="form-control mb-2" 
+                      onChange={(e) => setCourse({ ...course, number: e.target.value }) } />
+            </div>
+            <div className="col">
+                <button className="btn btn-primary float-end m-1"
                   id="wd-add-new-course-click"
-                  onClick={addNewCourse} > Add </button>
-          <button className="btn btn-warning float-end m-1"
+                  onClick={addUserCourse} > Add </button>
+                <button className="btn btn-warning float-end m-1"
                   id="wd-update-course-click"
                   onClick={updateCourse} > Update </button>
-      </h5><br />
-      <input value={course.name} className="form-control mb-2" 
-        onChange={(e) => setCourse({ ...course, name: e.target.value }) } />
+            </div>
+          </div>
+          
+          <textarea value={course.description} className="form-control"
+            onChange={(e) => setCourse({ ...course, description: e.target.value }) } /><hr />
+      </div>
+                  
+      : <Link to="/Kanbas/Enroll"><button className="btn btn-primary m-1">Find Courses</button></Link>
+      }<br />
+      
 
-      <textarea value={course.description} className="form-control"
-        onChange={(e) => setCourse({ ...course, description: e.target.value }) } /><hr />
-
-      <h2 id="wd-dashboard-published">Published Courses ({courses.length})</h2> <hr />
+      <h2 id="wd-dashboard-published"> {currentUser.role === 'FACULTY' ? "Published Courses" : "Enrolled Courses"} ({courses.length})</h2> <hr /> 
       <div id="wd-dashboard-courses" className="row">
         <div className="row row-cols-1 row-cols-md-5 g-4">
           {courses.map((course) => (
@@ -67,9 +86,12 @@ export default function Dashboard({courses, course, setCourse, addNewCourse,
                       {course.description}
                     </p>
                     <Link to={`/Kanbas/Courses/${course._id}/Home`} className="btn btn-primary">Go</Link>
+                    { currentUser.role === "FACULTY" ? 
+                    <span>
                     <button onClick={(event) => {
                         event.preventDefault();
-                        deleteCourse(course._id);
+                        // deleteCourse(course._id);
+                        deleteUserCourse(course._id); 
                       }} className="btn btn-danger float-end"
                       id="wd-delete-course-click">
                       Delete
@@ -82,6 +104,8 @@ export default function Dashboard({courses, course, setCourse, addNewCourse,
                       className="btn btn-warning me-2 float-end mr-1" >
                       Edit
                     </button>
+                    </span> : <span />
+                    }
                   </div>
                 </div>
               </Link>

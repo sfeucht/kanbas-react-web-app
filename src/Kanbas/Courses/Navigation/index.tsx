@@ -16,7 +16,6 @@ export default function CoursesNavigation({cid} : {cid: string | undefined}) {
       { label: "People",      path: "/Kanbas/Courses/" + cid + "/People" },
     ]
   
-  
     return (
 
       <div id="wd-courses-navigation" className="list-group fs-5 rounded-0">

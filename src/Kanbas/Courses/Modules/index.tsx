@@ -37,7 +37,6 @@ export default function Modules() {
     fetchModules(); 
   }, []); 
 
-  console.log(cid);
     return (
       <div>
         <div id="wd-modules">

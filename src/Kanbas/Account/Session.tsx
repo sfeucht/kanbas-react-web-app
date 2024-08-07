@@ -19,5 +19,7 @@ export default function Session({ children }: { children: any }) {
   }, []);
   if (!pending) {
     return children;
+  } else {
+    return <h1>loading</h1>
   }
 }
