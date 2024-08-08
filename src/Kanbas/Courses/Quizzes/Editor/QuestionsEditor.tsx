@@ -58,20 +58,23 @@ export default function QuestionsEditor() {
                 dummy = {...base, questionText: "Some text", correctAnswer: true} ;  
                 break 
             case 'Fill-in-the-Blanks':
-                dummy = {...base, questionText: "Some text", possibleAnswers: []} ; 
+                dummy = {...base, questionText: "Some text", possibleAnswers: []} ;
+                break; 
         }
 
         const res = await client.createQuestion(dummy); 
-        const newQuestions = [...questions, res];  
-        setQuestions(newQuestions); 
+        setQuestions((oldQuestions: any) => [...oldQuestions, res]); 
 
-        // add quiz id to list 
+        // add quiz id to list on client 
+        const newQuizIdList = [...quiz.questions, res._id]; 
         dispatch(
             setQuizzes(quizzes.map((q : any) => 
-            (q._id === qid ? {...q, questions: [...q.questions, res._id]} : q)
+            (q._id === qid ? {...q, questions: newQuizIdList} : q)
             ))
         ); 
 
+        // add quiz id to list on server 
+        await client.updateQuiz({...quiz, questions: newQuizIdList}); 
     }
 
 
@@ -92,7 +95,7 @@ export default function QuestionsEditor() {
         <div className="container centered">
             <ul id="wd-modules" className="list-group rounded-0 mt-4">
             {questions.map((q: any, index: any) => {return (
-                <EditableQuestion question={q} index={index} updateQuestion={updateQuizQuestion}  />
+                <EditableQuestion key={q._id} question={q} index={index} updateQuestion={updateQuizQuestion}  />
             )})}
             </ul>
 
