@@ -4,22 +4,6 @@ export default function MultipleChoiceEditor({question, updateQuestion} : {quest
 
     const [correctAnswers, setCorrectAnswers] = useState(question.correctAnswers); 
 
-    // add or remove from list 
-    // const changeAnswerCorrect = (option: any, checked: any) => {
-    //     let newAnswers; 
-    //     if (checked) {
-    //         if (!newAnswers.includes(option)) {
-    //             setCorrectAnswers([...newAnswers, option]);
-    //         }
-    //     } else {
-    //         if (newAnswers.includes(option)) {
-    //             const filtered = newAnswers.filter((a: any) => a !== option); 
-    //             setCorrectAnswers(filtered); 
-    //         }
-    //     }
-    //     // update parent state
-    //     updateQuestion({...question, correctAnswers: newAnswers}); 
-    // }
     const changeAnswerCorrect = (option: any, checked: any) => {
         setCorrectAnswers((prevCorrectAnswers: any) => {
             let newAnswers;
