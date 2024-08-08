@@ -3,13 +3,15 @@ import modulesReducer from "./Courses/Modules/reducer";
 import assignmentsReducer from "./Courses/Assignments/reducer"; 
 import accountReducer from "./Account/reducer";
 import quizzesReducer from "./Courses/Quizzes/reducer"; 
+// import questionsReducer from "./Courses/Quizzes/Question/reducer"; 
 
 const store = configureStore({
   reducer: {
     modulesReducer,
     assignmentsReducer,
     accountReducer,
-    quizzesReducer
+    quizzesReducer,
+    // questionsReducer
   },
 });
 export default store;

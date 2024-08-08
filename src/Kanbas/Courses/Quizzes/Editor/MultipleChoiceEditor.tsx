@@ -1,26 +1,46 @@
 import { useEffect, useState } from "react";
 
-export default function MultipleChoiceEditor({question, setQuestion} : {question: any, setQuestion: any}) {
+export default function MultipleChoiceEditor({question, updateQuestion} : {question: any, updateQuestion: any}) {
 
     const [correctAnswers, setCorrectAnswers] = useState(question.correctAnswers); 
 
     // add or remove from list 
+    // const changeAnswerCorrect = (option: any, checked: any) => {
+    //     let newAnswers; 
+    //     if (checked) {
+    //         if (!newAnswers.includes(option)) {
+    //             setCorrectAnswers([...newAnswers, option]);
+    //         }
+    //     } else {
+    //         if (newAnswers.includes(option)) {
+    //             const filtered = newAnswers.filter((a: any) => a !== option); 
+    //             setCorrectAnswers(filtered); 
+    //         }
+    //     }
+    //     // update parent state
+    //     updateQuestion({...question, correctAnswers: newAnswers}); 
+    // }
     const changeAnswerCorrect = (option: any, checked: any) => {
-        if (checked) {
-            if (!correctAnswers.includes(option)) {
-                setCorrectAnswers([...correctAnswers, option]);
+        setCorrectAnswers((prevCorrectAnswers: any) => {
+            let newAnswers;
+            if (checked) {
+                if (!prevCorrectAnswers.includes(option)) {
+                    newAnswers = [...prevCorrectAnswers, option];
+                } else {
+                    newAnswers = prevCorrectAnswers;
+                }
+            } else {
+                if (prevCorrectAnswers.includes(option)) {
+                    newAnswers = prevCorrectAnswers.filter((a: any) => a !== option);
+                } else {
+                    newAnswers = prevCorrectAnswers;
+                }
             }
-        } else {
-            if (correctAnswers.includes(option)) {
-                const filtered = correctAnswers.filter((a: any) => a !== option); 
-                setCorrectAnswers(filtered); 
-            }
-        }
-    }
-
-    useEffect(() => {
-        console.log('correctAnswers changed:', correctAnswers);
-    }, [correctAnswers]);
+            // update parent state with the new answers
+            updateQuestion({ ...question, correctAnswers: newAnswers });
+            return newAnswers;
+        });
+    };
 
     return (
         <div>
@@ -28,7 +48,7 @@ export default function MultipleChoiceEditor({question, setQuestion} : {question
             <h3>Question:</h3>
             <textarea id="question-text" className="form-control" rows={5} cols={30}
                 value={question.questionText}
-                onChange={(e) => { setQuestion({ ...question, questionText: e.target.value }) }} />
+                onChange={(e) => updateQuestion({ ...question, questionText: e.target.value })} />
 
             <h3 className='mt-3'>Answers:</h3>
             <span>Check box if answer is correct.</span>
@@ -38,7 +58,7 @@ export default function MultipleChoiceEditor({question, setQuestion} : {question
                     <input className="form-check-input" type='checkbox' checked={correctAnswers.includes(opt)}
                     onChange={(e) => changeAnswerCorrect(opt, e.target.checked)} />
                     <li key={idx}><input className="form-control mt-3 w-25" value={opt} /></li>
-                    </div>  // Display the options
+                    </div> 
                 ))}
             </ul>
             <button className="btn btn-outline-secondary m-4" >+ New Option</button>

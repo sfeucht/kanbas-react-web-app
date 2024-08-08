@@ -5,46 +5,23 @@ import MultipleChoiceEditor from './MultipleChoiceEditor';
 import TrueFalseEditor from './TrueFalseEditor';
 import FillBlanksEditor from './FillBlanksEditor'; 
 
-export default function EditableQuestion({ qid, index, updateQuiz }: { qid: any; index: number; updateQuiz: any}) {
-    const questionId = qid.questionId;
-    const [question, setQuestion] = useState<any>({});
-    const [questionType, setQuestionType] = useState("Multiple Choice");
-    const [loading, setLoading] = useState(true);  // Loading state
+export default function EditableQuestion({ question, index, updateQuestion}: { question: any; index: number, updateQuestion : any}) {
+ 
     const [editing, setEditing] = useState(false);
-    
-    const getQuizQuestion = async () => {
-        console.log('getquizquestion about to getQuestion', questionId); 
-        const q = await client.getQuestion(questionId);
-        console.log('got question', q); 
-        setQuestion(q);
-        setLoading(false);  // Set loading to false after fetching data
-    };
 
     const renderSwitch = () => {
-        switch (questionType) {
+        switch (question.questionType) {
             case "Multiple Choice": 
-                return <MultipleChoiceEditor question={question} setQuestion={setQuestion} />;
+                return <MultipleChoiceEditor question={question} updateQuestion={updateQuestion} />;
             case "True/False": 
-                return <TrueFalseEditor question={question} setQuestion={setQuestion} />;
+                return <TrueFalseEditor question={question} updateQuestion={updateQuestion} />;
             case "Fill-in-the-Blanks":
-                return <FillBlanksEditor question={question} setQuestion={setQuestion} />; 
+                return <FillBlanksEditor question={question} updateQuestion={updateQuestion} />; 
         }
     }
 
-    useEffect(() => {
-        getQuizQuestion();
-    }, []);
-
-    useEffect(() => {
-        updateQuiz(question);
-    }, [question]); 
-
-    if (loading) {
-        return <div>Loading...</div>;  // Render loading state
-    }
-
     return (
-        <div className='wd-module list-group-item p-0 mb-4 fs-5 border-gray w-75'>
+        <div className='wd-module list-group-item p-0 mb-4 fs-5 w-75'>
             {editing ?
                 <li className='wd-module list-group-item p-0 mb-4 fs-5'>
                     <div className="wd-title pb-5 pt-3 ps-3 pe-3 bg-secondary">
@@ -60,16 +37,18 @@ export default function EditableQuestion({ qid, index, updateQuiz }: { qid: any;
                 </li> :
 
                 <li className='wd-module list-group-item p-3 mb-4 fs-5'>
-                    <select className="form-select w-50 float-start" onChange={(e) => setQuestionType(e.target.value)}>
-                        <option selected value="Multiple Choice">Multiple Choice</option>
+                    <select className="form-select w-50 float-start" value={question.questionType}
+                    onChange={(e) => updateQuestion({...question, questionType: e.target.value})}>
+                        <option value="Multiple Choice">Multiple Choice</option>
                         <option value="True/False">True/False</option>
                         <option value="Fill-in-the-Blanks">Fill-in-the-Blanks</option>
                     </select>
                     <div className='w-25 float-start text-end pe-2'>pts: </div>
                     <input className='form-control w-25 float-start mb-3' value={question.points}
-                    onChange={(e) => setQuestion({...question, points: e.target.value})}></input>
+                    onChange={(e) => {updateQuestion({...question, points: e.target.value})}} />
 
                     {renderSwitch()}
+
 
 
                     
