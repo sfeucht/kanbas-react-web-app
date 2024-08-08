@@ -14,6 +14,15 @@ export default function FillBlanksEditor({question, updateQuestion} : {question:
         }); 
     }
 
+    const addPossibleAnswer = () => {
+        let newPossibleAnswers;  
+        setPossibleAnswers((oldPossibleAnswers : any) => {
+            newPossibleAnswers = [...oldPossibleAnswers, "New Answer"]; 
+            updateQuestion({ ...question, possibleAnswers: newPossibleAnswers });
+            return newPossibleAnswers; 
+        }); 
+    }
+
     return (
         <div>
             <div className='mb-3'>Write a prompt with one blank, and provide several valid things that could go in that blank.</div>
@@ -30,7 +39,10 @@ export default function FillBlanksEditor({question, updateQuestion} : {question:
                     onChange={(e) => (onAnswerChange(e, ans))} />
                 </div>
             ))}
-            <button className="btn btn-outline-secondary m-4" >+ Possible Answer</button>
+            <button className="btn btn-outline-secondary m-4" 
+            onClick={addPossibleAnswer}>
+                + Possible Answer
+            </button>
         </div>
         )
     }

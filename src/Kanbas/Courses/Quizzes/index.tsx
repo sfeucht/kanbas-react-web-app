@@ -49,7 +49,7 @@ export default function Quizzes() {
     }
 
     const deleteQuiz = () => {
-
+      
     }
 
     const editQuiz = () => {

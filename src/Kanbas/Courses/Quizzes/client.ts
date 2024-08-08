@@ -18,11 +18,17 @@ export const updateQuiz = async (quiz: any) => {
 
 export const updateQuestion = async (question: any) => {
   console.log(`${REMOTE_SERVER}/api/questions/${question._id}`); 
+  console.log('updating question', question); 
   const response = await axios.put(`${REMOTE_SERVER}/api/questions/${question._id}`, question);
   return response.data;
 };
 
 export const getQuestion = async (questionId: string) => {
   const response = await axios.get(`${REMOTE_SERVER}/api/questions/${questionId}`);
+  return response.data;
+};
+
+export const createQuestion = async (newQuestion: any) => {
+  const response = await axios.post(`${REMOTE_SERVER}/api/questions`, newQuestion);
   return response.data;
 };

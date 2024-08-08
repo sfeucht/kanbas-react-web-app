@@ -26,6 +26,16 @@ export default function MultipleChoiceEditor({question, updateQuestion} : {quest
         });
     };
 
+    const newOption = () => {
+        const newOption = "Option"; 
+        updateQuestion({...question, options: [...question.options, newOption]}); 
+    }
+
+    const handleOptionChange = (index: number, value: string) => {
+        const newOptions = question.options.map((opt: any, idx: number) => idx === index ? value : opt);
+        updateQuestion({ ...question, options: newOptions });
+    };
+
     return (
         <div>
             <div className='mb-3'>Enter your question and multiple answers, then select the one correct answer.</div>
@@ -41,11 +51,16 @@ export default function MultipleChoiceEditor({question, updateQuestion} : {quest
                     <div className="form-check">
                     <input className="form-check-input" type='checkbox' checked={correctAnswers.includes(opt)}
                     onChange={(e) => changeAnswerCorrect(opt, e.target.checked)} />
-                    <li key={idx}><input className="form-control mt-3 w-25" value={opt} /></li>
+                    <li key={idx}>
+                        <input className="form-control mt-3 w-25" value={opt} 
+                        onChange={(e) => handleOptionChange(idx, e.target.value)}/></li>
                     </div> 
                 ))}
             </ul>
-            <button className="btn btn-outline-secondary m-4" >+ New Option</button>
+            <button className="btn btn-outline-secondary m-4" 
+            onClick={newOption}>
+                + New Option
+            </button>
         </div>
         )
 }

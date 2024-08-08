@@ -1,14 +1,23 @@
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import * as client from "../client"; 
 import { useEffect, useState } from "react";
 import MultipleChoice from "./MultipleChoice";
 import { Link } from "react-router-dom";
+import TrueFalse from "./TrueFalse";
+import FillInBlank from "./FillInBlank";
+import { useSelector } from "react-redux";
 
 export default function Question() {
     const { cid, qid, index } = useParams(); 
     const [question, setQuestion] = useState<any>({});
     const [quiz, setQuiz] = useState<any>({}); 
     const [loading, setLoading] = useState<boolean>(true);
+    const [navigatePath, setNavigatePath] = useState<string | null>(null);
+
+    const navigate = useNavigate(); 
+
+    const nextQuestion = Number(index) + 1; 
+    const prevQuestion = Number(index) - 1; 
 
     const getQuizQuestion = async () => {
       try {
@@ -28,22 +37,47 @@ export default function Question() {
       }
     }
 
-    const nextQuestion = Number(index) + 1; 
+    // get current user 
+    const { currentUser } = useSelector((state: any) => state.accountReducer);
+
+    const updateStudentAnswer = (userAnswer: any) => { 
+      console.log('userAnswer', userAnswer); 
+
+      const currUserId = currentUser._id; 
+      let prevNoAttempts = question.userAttempts[currUserId]; 
+
+      if (prevNoAttempts == null) {
+        prevNoAttempts = 0; 
+      }
+
+      const newUserAnswers = {...question.userAnswers, [currUserId] : userAnswer}; 
+      const newUserAttempts = {...question.userAttempts, [currUserId] : prevNoAttempts + 1}; 
+
+      setQuestion({...question, userAnswers: newUserAnswers, userAttempts : newUserAttempts}); 
+    }
 
     const renderSwitch = (q: any) => {
       switch(q.questionType) {
         case 'Multiple Choice':
-          return <MultipleChoice options={q.options} />;
+          return <MultipleChoice options={q.options} updateAnswer={updateStudentAnswer} />;
         case 'True/False':
-          return 'tf';
+          return <TrueFalse updateAnswer={updateStudentAnswer}/>;
         default:
-          return 'asdf'; 
+          return <FillInBlank updateAnswer={updateStudentAnswer}/>; 
       }
     };
 
+    const saveAndNavigate = async (path: string) => {
+      const res = await client.updateQuestion(question);
+      console.log(res); 
+      navigate(path); 
+    }
+
     useEffect(() => {
+      setLoading(true);
       getQuizQuestion(); 
-    }, []); 
+    }, [index]); 
+
 
     if (loading) {
       return <div>Loading...</div>;
@@ -56,19 +90,18 @@ export default function Question() {
         <h5>{question.questionText}</h5>
         <div className="container m-1">{renderSwitch(question)}</div>
         <div className="mt-5 mr-4 float-end">
-          {nextQuestion > quiz.questions.length ? 
-          <Link to={`/Kanbas/Courses/${cid}/Quizzes/${qid}/${nextQuestion}`}>
-            <button className="btn btn-primary">Next ▸</button>
-          </Link> :
-          <Link to={`/Kanbas/Courses/${cid}/Quizzes/${qid}/finished`}>
-            <button className="btn btn-primary">Finish</button>
-          </Link>
+          { (nextQuestion < quiz.questions.length) ? 
+          <button className="btn btn-primary"
+          onClick={(e: any) => saveAndNavigate(`/Kanbas/Courses/${cid}/Quizzes/${qid}/${nextQuestion}`)}>Next ▸</button> :
+          <button className="btn btn-primary"
+          onClick={(e: any) => saveAndNavigate(`/Kanbas/Courses/${cid}/Quizzes/${qid}/finished`)}>Finish</button>
           } 
         </div>
         
         {Number(index) > 0 ? 
         <div className="mt-5 ml-4 float-start">
-          <button className="btn btn-primary">◂ Prev</button>
+          <button className="btn btn-primary"
+          onClick={(e: any) => saveAndNavigate(`/Kanbas/Courses/${cid}/Quizzes/${qid}/${prevQuestion}`)}>◂ Prev</button>
         </div> : <span></span>}
         </div>
         </div>

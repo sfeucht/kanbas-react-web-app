@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import * as client from '../client'; 
 import EditableQuestion from "./EditableQuestion";
+import { setQuizzes } from "../reducer";
 
 export default function QuestionsEditor() {
     const { cid, qid } = useParams(); 
@@ -40,6 +41,39 @@ export default function QuestionsEditor() {
         console.log('updated questions with', updatedQuestion); 
     };
 
+    const newQuestion = async (type: String) => {
+        const base = {
+            quizId : qid, 
+            courseId : cid,
+            points: 10,
+            questionType: type
+        }
+
+        let dummy; 
+        switch (type) {
+            case 'Multiple Choice':
+                dummy = {...base, questionText: "Some text", options: [], correctAnswers: []} ; 
+                break 
+            case 'True/False':
+                dummy = {...base, questionText: "Some text", correctAnswer: true} ;  
+                break 
+            case 'Fill-in-the-Blanks':
+                dummy = {...base, questionText: "Some text", possibleAnswers: []} ; 
+        }
+
+        const res = await client.createQuestion(dummy); 
+        const newQuestions = [...questions, res];  
+        setQuestions(newQuestions); 
+
+        // add quiz id to list 
+        dispatch(
+            setQuizzes(quizzes.map((q : any) => 
+            (q._id === qid ? {...q, questions: [...q.questions, res._id]} : q)
+            ))
+        ); 
+
+    }
+
 
     const saveQuiz = async () => {
         // loop through all the questions and update them on server 
@@ -62,7 +96,28 @@ export default function QuestionsEditor() {
             )})}
             </ul>
 
-            <button className="btn btn-outline-secondary m-4">+ New Question</button>
+            {/* <button className="btn btn-outline-secondary m-4"
+            onClick={newQuestion}>
+                + New Question
+            </button> */}
+
+            <div className="dropdown btn btn-secondary m-1 p-0">
+            <button id="wd-publish-all-btn" className="btn btn-lg btn-secondary dropdown-toggle"
+            type="button" data-bs-toggle="dropdown">
+            + New Question
+            </button>
+            <ul className="dropdown-menu">
+            <li className="dropdown-item">
+                <span onClick={(e) => newQuestion('Multiple Choice')}>Multiple Choice</span>
+            </li>
+            <li className="dropdown-item">
+                <span onClick={(e) => newQuestion('True/False')}>True/False</span>
+            </li>
+            <li className="dropdown-item">
+                <span onClick={(e) => newQuestion('Fill-in-the-Blanks')}>Fill-in-the-Blanks</span>
+            </li>
+            </ul>
+            </div>
 
             <hr />
             <button className="btn btn-primary float-end wd-delete" 

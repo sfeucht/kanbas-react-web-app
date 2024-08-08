@@ -1,17 +1,19 @@
 
-export default function MultipleChoice(options: any) {
-    // [{
-    //     type: String,
-    //     required: true,
-    // }]
-    const optionsArray = options.options;
+export default function MultipleChoice({options, updateAnswer}: {options: any, updateAnswer: any}) {
 
     return (
 
-        <div className="form-check">{optionsArray.map((o: any, idx: any) => 
+        <div className="form-check">
+            {options.map((o: any, idx: any) => 
             <div>
-            <input className="form-check-input" type="radio" id={`${idx}`} />
-            <label htmlFor={`${idx}`}>{`${o}`}</label>
+                <input 
+                className="form-check-input" 
+                name='mc' 
+                type="radio" 
+                id={`${idx}`} 
+                value={`${o}`} 
+                onChange={(e) => updateAnswer(e.target.value)}/>
+                <label htmlFor={`${idx}`}>{`${o}`}</label>
             </div>
             )}
         </div>
