@@ -5,7 +5,8 @@ import MultipleChoiceEditor from './MultipleChoiceEditor';
 import TrueFalseEditor from './TrueFalseEditor';
 import FillBlanksEditor from './FillBlanksEditor'; 
 
-export default function EditableQuestion({ question, index, updateQuestion}: { question: any; index: number, updateQuestion : any}) {
+export default function EditableQuestion({ question, index, updateQuestion}: 
+    { question: any; index: number, updateQuestion : any}) {
  
     const [editing, setEditing] = useState(false);
 
@@ -22,7 +23,7 @@ export default function EditableQuestion({ question, index, updateQuestion}: { q
 
     return (
         <div className='wd-module list-group-item p-0 mb-4 fs-5 w-75'>
-            {editing ?
+            {!editing ?
                 <li className='wd-module list-group-item p-0 mb-4 fs-5'>
                     <div className="wd-title pb-5 pt-3 ps-3 pe-3 bg-secondary">
                         <div className='float-start'><h3>Question {index + 1}</h3></div>
@@ -32,7 +33,7 @@ export default function EditableQuestion({ question, index, updateQuestion}: { q
                         {question.questionText}
                     </div>
                     <div className='float-end p-4'>
-                        <FaPencilAlt />
+                        <FaPencilAlt onClick={(e: any) => setEditing(true)} />
                     </div>
                 </li> :
 

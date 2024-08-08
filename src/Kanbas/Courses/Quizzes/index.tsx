@@ -13,8 +13,10 @@ import { IoRocketOutline } from "react-icons/io5";
 export default function Quizzes() {
     const { cid } = useParams();
     const { quizzes } = useSelector((state: any) => (state.quizzesReducer));
+    const { currentUser } = useSelector((state: any) => state.accountReducer);
 
     const dispatch = useDispatch(); 
+    const navigate = useNavigate(); 
 
     const defaultQuiz = {
       "quizType": "Graded Quiz",
@@ -48,12 +50,20 @@ export default function Quizzes() {
       dispatch(setQuizzes(updatedQuizzes)); 
     }
 
-    const deleteQuiz = () => {
-      
+    const deleteQuiz = async (quizId: any) => {
+      await client.deleteQuiz(quizId); 
+      dispatch(setQuizzes(quizzes.filter((q: any) => q._id !== quizId))); 
     }
 
-    const editQuiz = () => {
+    const goEditQuiz = (q: any) => {
+      navigate(`/Kanbas/Courses/${q.courseId}/Quizzes/${q._id}`); 
+    }
 
+    const togglePublish = async (quiz: any) => {
+      const prev = quiz.published
+      const toggled = {...quiz, published: !prev}; 
+      await client.updateQuiz(toggled); 
+      dispatch(setQuizzes(quizzes.map((q: any) => q._id === quiz._id ? toggled : q))); 
     }
 
     useEffect(() => {
@@ -83,7 +93,13 @@ export default function Quizzes() {
 
       <ul className="wd-assigns list-group rounded-0">
         {quizzes
-        .filter((q: any) => (q.courseId === cid))
+        .filter((q: any) => {
+          if (currentUser.role === 'FACULTY') {
+            return q.courseId === cid; 
+          } else {
+            return (q.courseId === cid) && (q.published); 
+          }
+        })
         .map((q: any) => (
         <li className="wd-assign list-group-item p-3 ps-1">
         <div className="wrap">
@@ -100,7 +116,9 @@ export default function Quizzes() {
             <b>Due</b> {q.dueDate.slice(0,10)} | 
             {q.points} pts </span>
           </div>
-          <QuizControlButtons quizId={q._id} />
+          { currentUser.role === 'FACULTY' ?
+          <QuizControlButtons quiz={q} deleteQuiz={deleteQuiz} goEditQuiz={goEditQuiz} togglePublish={togglePublish} />
+          : <span></span>}
         </li>
         )
         )}

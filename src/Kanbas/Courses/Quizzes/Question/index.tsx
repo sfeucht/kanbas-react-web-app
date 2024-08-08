@@ -2,7 +2,6 @@ import { useNavigate, useParams } from "react-router";
 import * as client from "../client"; 
 import { useEffect, useState } from "react";
 import MultipleChoice from "./MultipleChoice";
-import { Link } from "react-router-dom";
 import TrueFalse from "./TrueFalse";
 import FillInBlank from "./FillInBlank";
 import { useSelector } from "react-redux";

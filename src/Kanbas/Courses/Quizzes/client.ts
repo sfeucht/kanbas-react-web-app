@@ -6,6 +6,11 @@ export const findQuizzesForCourse = async (courseId: string) => {
   return response.data;
 };
 
+export const deleteQuiz = async (quizId : any) => {
+  const response = await axios.delete(`${REMOTE_SERVER}/api/quizzes/${quizId}`);
+  return response.data;
+};
+
 export const createQuiz = async (newQuiz : any) => {
   const response = await axios.post(`${REMOTE_SERVER}/api/quizzes`, newQuiz);
   return response.data;
