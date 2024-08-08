@@ -31,6 +31,14 @@ export default function Signin() {
       <button id="wd-signin-btn" onClick={signin} className="btn btn-primary w-100"> Sign in </button>
       <br />
       <Link id="wd-signup-link" to="/Kanbas/Account/Signup">Sign up</Link>
+
+      <div>
+        <br /><br />
+        Group: Sheridan Feucht <br />
+        Assignment Links: <br />
+        <a href="https://github.com/sfeucht/kanbas-react-web-app">kanbas-react-web-app</a> <br />
+        <a href="https://github.com/sfeucht/kanbas-node-server-app">kanbas-node-server-app</a>
+      </div>
     </div>
   );
 }
